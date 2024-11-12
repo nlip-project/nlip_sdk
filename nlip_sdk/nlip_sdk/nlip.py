@@ -107,28 +107,82 @@ def nlip_encode_text(message: str, control:bool=False, language:str="english") -
         control=control, format=AllowedFormats.text, subformat=language, content=message
     )
 
-def nlip_extract_text(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Message, language:str = 'english') -> str:
-    """This function extracts all text message in given language from a message. 
-    The extracted text is a concatanation of all the messages that are included in 
-    the submessages (if any) carried as content in the specified language. 
+
+def nlip_extract_field(msg:NLIP_BasicMessage | NLIP_Message | NLIP_SubMessage,format:str, subformat:str = 'None') -> any: 
+    """This function extracts the field matching specified format from the message. 
+    For a NLIP_Message, only the primary field is checked 
+    When the subformat is None, it is not compared. 
+    If the subformat is specified, both the format and subformat should match. 
+
+    
+
+    Args:
+        msg (NLIP_Message | NLIP_BasicMesssage|NLIP_SubMessage): The input message
+        format (str): The format of the message
+        subformat (str): The subformat of the message
+    
+    Returns:
+        contents: The content from matching field/subfield or None 
+    """
+
+    if msg is None:
+        return None
+    if isinstance(msg, (NLIP_Message, NLIP_BasicMessage, NLIP_SubMessage)): 
+        if msg.format is not None and msg.subformat is not None: 
+            if msg.format.lower() == format.lower():
+                if subformat is None: 
+                    return msg.content
+                else: 
+                    if subformat.lower() == msg.subformat.lower(): 
+                        return msg.content 
+    return None
+
+
+def nlip_extract_field_list(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Message, format:str, subformat:str = 'None') -> list:
+    """This function extracts all the fields of specified format from the message. 
+    The extracted fields are put together in a list, each entry corresponding to a submesage
+    Note that when the message is a BasicMessage 
 
     Args:
         msg (NLIP_Message|NLIP_BasicMesssage|NLIP_SubMessage): The input message
         language (str): The subformat of the message
     
     Returns:
+        list: A list containing all matching fields in the message. 
+    """
+
+    if msg is None:
+        return list()
+    if isinstance(msg, (NLIP_BasicMessage,NLIP_SubMessage)): 
+        field = nlip_extract_field(msg, format, subformat)
+        return  list() if field is None else [field]
+    else: 
+        if isinstance(msg, NLIP_Message):
+            field = nlip_extract_field(msg, format, subformat)
+            field_list = list() if field is None else [field]
+            for submsg in msg.submessages:
+                field_list = field_list + [nlip_extract_field(submsg, format, subformat)]
+            return field_list
+    return list()
+    
+def nlip_extract_text(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Message, language:str = 'english', separator=' ') -> str:
+    """This function extracts all text message in given language from a message. 
+    The extracted text is a concatanation of all the messages that are included in 
+    the submessages (if any) carried as content in the specified language. 
+
+    Args:
+        msg (NLIP_Message|NLIP_BasicMesssage|NLIP_SubMessage): The input message
+        language (str): The subformat of the message - specify None if language does not matter
+        separator (str): The separator to insert 
+    
+    Returns:
         txt: The combined text.
     """
     if msg is None:
         return ''
-    answer = ''
-    if AllowedFormats.text == msg.format and msg.subformat.lower() == language.lower():
-        answer = msg.content
-    if isinstance(msg, NLIP_BasicMessage) or isinstance(msg,NLIP_SubMessage): 
-            return answer
-    else:
-        for sub in msg.submessages:
-            if AllowedFormats.text == sub.format and sub.subformat.lower() == language.lower():
-                answer = answer + sub.content
-    return answer
 
+    text_list = nlip_extract_field_list(msg,AllowedFormats.text, language)
+    if len(text_list) > 0:
+        return separator.join(text_list)
+    else:
+        return ''

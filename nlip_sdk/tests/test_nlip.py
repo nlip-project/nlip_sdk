@@ -41,7 +41,7 @@ class TestNLIPExtractText(unittest.TestCase):
     def test_message(self):
         sub = nlip.NLIP_SubMessage(format=nlip.AllowedFormats.text, subformat='English', content='Goodbye world!')
         msg = nlip.NLIP_Message(control=False, format=nlip.AllowedFormats.text, subformat='english', content='Hello world!', submessages=[sub])
-        self.assertEqual(nlip.nlip_extract_text(msg), 'Hello world!'+'Goodbye world!')
+        self.assertEqual(nlip.nlip_extract_text(msg), 'Hello world!'+' '+ 'Goodbye world!')
 
     def test_none(self):
         self.assertEqual(nlip.nlip_extract_text(None), '')
