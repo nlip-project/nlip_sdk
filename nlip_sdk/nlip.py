@@ -138,7 +138,7 @@ def nlip_extract_field(msg:NLIP_BasicMessage | NLIP_Message | NLIP_SubMessage,fo
     return None
 
 
-def nlip_extract_field_list(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Message, format:str, subformat:str = 'None') -> list:
+def nlip_extract_field_list(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Message, format:str, subformat:str = None) -> list:
     """This function extracts all the fields of specified format from the message. 
     The extracted fields are put together in a list, each entry corresponding to a submesage
     Note that when the message is a BasicMessage 
@@ -161,7 +161,10 @@ def nlip_extract_field_list(msg: NLIP_BasicMessage | NLIP_SubMessage | NLIP_Mess
             field = nlip_extract_field(msg, format, subformat)
             field_list = list() if field is None else [field]
             for submsg in msg.submessages:
-                field_list = field_list + [nlip_extract_field(submsg, format, subformat)]
+                value = nlip_extract_field(submsg, format, subformat)
+                if value is not None: 
+                    field_list = field_list + [value]
+            
             return field_list
     return list()
     
