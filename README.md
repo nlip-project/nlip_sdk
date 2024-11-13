@@ -6,7 +6,11 @@ The NLIP SDK contains the following modules:
 
 * utils.py - A set of basic utility routines that simplify implementation. 
 * errrors.py - A set of error definitions that help diagnose in development. 
-* nlip.py - The definition of the NLIP message formats. 
+* nlip.proto - The protocol buffer formated messages for NLIP protocol
+* nlip_pb2.py - Compiled proptol buffer messages. 
+* nlip.py - The definition of the NLIP methods. 
+
+#Generating Python Code from .proto File
 
 ## Publishing the Package
 
