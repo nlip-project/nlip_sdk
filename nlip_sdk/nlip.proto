@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package nlip;
+
+// Enum for AllowedFormats
+enum AllowedFormats {
+    TEXT = 0;
+    TOKEN = 1;
+    STRUCTURED = 2;
+    BINARY = 3;
+    LOCATION = 4;
+    GENERIC = 5;
+}
+
+// Sub-message format
+message NLIP_SubMessage {
+    AllowedFormats format = 1;
+    string subformat = 2;
+
+    // Oneof for content: string or structured (dictionary)
+    oneof content {
+        string text_content = 3;
+        // You could define a Content message with a map for a dictionary-style content
+        // message Content {
+        //     map<string, string> dictionary_content = 1;
+        // }
+        // Content dict_content = 4;
+    }
+}
+
+// Basic message format
+message NLIP_BasicMessage {
+    bool control = 1;
+    AllowedFormats format = 2;
+    string subformat = 3;
+
+    // Oneof for content: string or dictionary (extendable)
+    oneof content {
+        string text_content = 4;
+        // map<string, string> dict_content = 5;
+    }
+}
+
+// Main message format, includes sub-messages
+message NLIP_Message {
+    bool control = 1;
+    AllowedFormats format = 2;
+    string subformat = 3;
+
+    // Oneof for content: string or dictionary (extendable)
+    oneof content {
+        string text_content = 4;
+        // map<string, string> dict_content = 5;
+    }
+
+    repeated NLIP_SubMessage submessages = 5;
+}
