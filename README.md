@@ -8,3 +8,11 @@ The NLIP SDK contains the following modules:
 * errrors.py - A set of error definitions that help diagnose in development. 
 * nlip.py - The definition of the NLIP message formats. 
 
+## Publishing the Package
+
+To publish the package to PyPI, ensure that your changes are committed and then create a version tag. You can do this with the following commands:
+
+```bash
+$ git tag v0.1.0  # Replace with new version
+$ git push origin v0.1.0
+```
