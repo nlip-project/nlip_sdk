@@ -46,5 +46,22 @@ class TestNLIPExtractText(unittest.TestCase):
     def test_none(self):
         self.assertEqual(nlip.nlip_extract_text(None), '')
 
+class TestReservedTokens(unittest.TestCase):
+    def test_match_auth(self):
+        for field in ['authorization', 'Authorization', 'AuthorizatioN:']:
+            self.assertEqual(True,nlip.ReservedTokens.is_auth(field))
+        
+    def test_match_conv(self):
+        for field in ['conversation', 'conVersation-id', 'Conversation/']:
+            self.assertEqual(True, nlip.ReservedTokens.is_conv(field))
+
+    def test_suffix(self):
+        for field in ['conversation', 'authorization']:
+            for seperator in ['','/','-',':','::']:
+                for index in [str(25), '3949494']:
+                    value = field+seperator + index
+                    self.assertEqual(index, nlip.ReservedTokens.get_suffix(value,seperator) )
+
+
 if __name__ == "__main__":
     unittest.main()

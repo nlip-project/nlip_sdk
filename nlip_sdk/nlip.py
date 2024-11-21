@@ -50,6 +50,37 @@ class AllowedFormats(CaseInsensitiveEnum):
     location = "location"
     generic = "generic"
 
+class ReservedTokens(CaseInsensitiveEnum):
+    """
+    The values of the reserved values of subformat when token is format
+    - as defined by NLIP Specification
+    auth is authentication token 
+    conv is conversation id token
+    """
+    auth = 'authorization'
+    conv = 'conversation'
+
+    @classmethod
+    def is_reserved(cls, field:str):
+        return field is not None and field.lower().startswith((cls.auth, cls.conv))
+
+    @classmethod
+    def is_auth(cls, field:str):
+        return field is not None and field.lower().startswith(cls.auth)
+    
+    @classmethod
+    def is_conv(cls, field:str):
+        return field is not None and field.lower().startswith(cls.conv)
+    
+    @classmethod
+    def get_suffix(cls, field:str, seperator='') -> str:
+        if cls.is_auth(field):
+            return field[len(cls.auth)+len(seperator):].strip()
+        elif cls.is_conv(field):
+            return field[len(cls.conv)+len(seperator):].strip()
+        else:
+            return field
+
 
 class NLIP_SubMessage(BaseModel):
     """Represents a sub-message in the context of the NLIP protocol.
