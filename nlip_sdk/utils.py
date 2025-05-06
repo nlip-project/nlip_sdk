@@ -165,3 +165,4 @@ def get_class_name(this_object: object) -> str:
 
     """
     return this_object.__class__.__name__
+
