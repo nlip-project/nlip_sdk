@@ -27,7 +27,7 @@ from enum import Enum
 from typing import Union, Optional
 from json import loads
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 def nlip_compare_string(value1: str, value2:str, matchNone:bool=False) -> bool: 
     """
@@ -125,6 +125,14 @@ class NLIP_SubMessage(BaseModel):
         content (Union[str, dict]): The content of the message. Can be a string or a dictionary. 
         If a dictionary, the content would be encoded as a nested JSON. 
     """
+    @model_validator(mode="before")
+    @classmethod
+    def _lowercase_envelope_keys(cls, data):
+        # ECMA-430 field names are case-insensitive; normalise envelope keys before validation.
+        if isinstance(data, dict):
+            return {k.lower() if isinstance(k, str) else k: v for k, v in data.items()}
+        return data
+
     format: AllowedFormats
     subformat: str
     content: Union[str, dict]
@@ -142,6 +150,14 @@ class NLIP_SubMessage(BaseModel):
 
 
 class NLIP_Message(BaseModel):
+    @model_validator(mode="before")
+    @classmethod
+    def _lowercase_envelope_keys(cls, data):
+        # ECMA-430 field names are case-insensitive; normalise envelope keys before validation.
+        if isinstance(data, dict):
+            return {k.lower() if isinstance(k, str) else k: v for k, v in data.items()}
+        return data
+
     messagetype: Optional[str] = None
     format: str
     subformat: str
