@@ -86,7 +86,7 @@ class ReservedTokens(CaseInsensitiveEnum):
     conv is conversation id token - reserved subformat value when format is token
     contorl is reserved value of control -- reserved value of messageType
     """
-    auth = 'authorization'
+    auth = 'authentication'
     conv = 'conversation'
     control = 'control'
 
